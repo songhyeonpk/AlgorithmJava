@@ -1,34 +1,28 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.StringTokenizer;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int size;
-    static boolean[][] visited;
-    static int[][] graph;
-    static int[] dirX = {-2, -1, 1, 2, 2, 1, -1, -2};
-    static int[] dirY = {-1, -2, -2, -1, 1, 2, 2, 1};
-    
-    static class Node {
-        int x;
-        int y;
+    static class Point {
+        int x, y;
         
-        public Node(int x, int y) {
+        Point(int x, int y) {
             this.x = x;
             this.y = y;
         }
     }
     
+    static int size;
+    static boolean[][] visited;
+    static int[][] graph;
+    static int[] dx = {-2, -1, 1, 2, 2, 1, -1, -2};
+    static int[] dy = {-1, -2, -2, -1, 1, 2, 2, 1};
+    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
-        
         int T = Integer.parseInt(br.readLine());
         
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st = null;
         for(int i = 0; i < T; i++) {
             size = Integer.parseInt(br.readLine());
             visited = new boolean[size][size];
@@ -46,33 +40,38 @@ public class Main {
             sb.append(graph[endX][endY]).append("\n");
         }
         br.close();
+        
         System.out.println(sb);
     }
     
-    static void bfs(int startX, int startY) {
-        Queue<Node> queue = new LinkedList<>();
-        queue.offer(new Node(startX, startY));
-        visited[startX][startY] = true;
+    private static void bfs(int x, int y) {
+        Queue<Point> queue = new LinkedList<>();
+        queue.offer(new Point(x, y));
+        visited[x][y] = true;
         
         while(!queue.isEmpty()) {
-            Node node = queue.poll();
-            int nowX = node.x;
-            int nowY = node.y;
+            Point now = queue.poll();
+            int nowX = now.x;
+            int nowY = now.y;
             
             for(int i = 0; i < 8; i++) {
-                int nextX = nowX + dirX[i];
-                int nextY = nowY + dirY[i];
+                int nx = nowX + dx[i];
+                int ny = nowY + dy[i];
                 
-                if(range_check(nextX, nextY) && !visited[nextX][nextY]) {
-                    queue.offer(new Node(nextX, nextY));
-                    visited[nextX][nextY] = true;
-                    graph[nextX][nextY] = graph[nowX][nowY] + 1;
+                if(!rangeCheck(nx, ny)) {
+                    continue;
+                }
+                
+                if(!visited[nx][ny]) {
+                    visited[nx][ny] = true;
+                    graph[nx][ny] = graph[nowX][nowY] + 1;
+                    queue.offer(new Point(nx, ny));
                 }
             }
         }
     }
     
-    static boolean range_check(int x, int y) {
+    private static boolean rangeCheck(int x, int y) {
         return x >= 0 && x < size && y >= 0 && y < size;
     }
 }
